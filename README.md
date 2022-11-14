@@ -4,10 +4,16 @@ PHP Versions:
 
 - [x] 7.4-fpm
 - [ ] 7.4-fpm-alpine
-- [ ] 8.0-fpm
+- [x] 8.0-fpm
 - [ ] 8.0-fpm-alpine
-- [ ] 8.1-fpm
+- [x] 8.1-fpm
 - [ ] 8.1-fpm-alpine
+
+## Build for yourself
+
+```bash
+docker build -f "[version tag].dockerfile" -t "sensasidelight/php-laravel:[version tag]" .
+```
 
 ## Contributing
 

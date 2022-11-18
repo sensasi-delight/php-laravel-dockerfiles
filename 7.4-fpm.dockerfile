@@ -20,5 +20,7 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Overide the entrypoint
-COPY ./entrypoints/* /usr/local/bin
+COPY ./entrypoints/fpm-entrypoint /usr/local/bin/docker-php-entrypoint
+COPY ./entrypoints/db_checks.php /usr/local/bin/db_checks.php
+
 RUN chmod +x /usr/local/bin/docker-php-entrypoint

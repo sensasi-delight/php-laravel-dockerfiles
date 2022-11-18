@@ -57,7 +57,7 @@ if [ ! -f "/var/www/composer.json" ]; then
 	chmod -R 400 /var/www/.env;
 fi
 
-# su - $USER
+su $USER
 
 cd /var/www
 

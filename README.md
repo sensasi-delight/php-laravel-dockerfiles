@@ -3,17 +3,27 @@
 PHP Versions:
 
 - [x] 7.4-fpm
-- [ ] 7.4-fpm-alpine
+- [x] 7.4-fpm-alpine
 - [x] 8.0-fpm
-- [ ] 8.0-fpm-alpine
+- [x] 8.0-fpm-alpine
 - [x] 8.1-fpm
-- [ ] 8.1-fpm-alpine
+- [x] 8.1-fpm-alpine
 
 ## Build for yourself
+
+To build the image, you can run the command below on your command line.
 
 ```bash
 docker build -f "[version tag].dockerfile" -t "sensasidelight/php-laravel:[version tag]" .
 ```
+
+example:
+
+```bash
+docker build -f "7.4-fpm-alpine.dockerfile" -t "sensasidelight/php-laravel:7.4-fpm-alpine" .
+```
+
+after build process has finished, you can check the image by `docker images -a` command. Image `sensasidelight/php-laravel:7.4-fpm-alpine` should be on the list.
 
 ## Contributing
 

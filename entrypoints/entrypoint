@@ -37,9 +37,10 @@ if [ ! -f "/var/www/composer.json" ]; then
 		fi
 	fi
 
-	cp -a /tmp/laravel-app/. /var/www/
-	rm -r /tmp/laravel-app
+	cp -a /tmp/laravel-app/. /var/www/;
+	rm -r /tmp/laravel-app;
 
+	chown -R admin:www-data /var/www;
 	chmod -R 775 /var/www/bootstrap/cache;
 	chmod -R 775 /var/www/storage;
 	chmod -R 400 /var/www/.env;

@@ -84,7 +84,7 @@ fi
 
 SEED_DB=$(cat .env | grep SEED_DB= | grep -v "#" | tail -1 | cut -d '=' -f2);
 if [ "$SEED_DB" = "true" ] && [ ! -e "/home/$USER/logs/DB_SEEDED"  ]; then
-	php artisan db:seed;
+	php artisan db:seed --force;
 	touch /home/$USER/logs/DB_SEEDED;
 fi
 

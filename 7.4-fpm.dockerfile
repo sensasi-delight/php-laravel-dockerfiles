@@ -20,7 +20,23 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Overide the entrypoint
-COPY ./entrypoints/fpm-entrypoint /usr/local/bin/docker-php-entrypoint
+COPY ./entrypoints/entrypoint /usr/local/bin/docker-php-entrypoint
 COPY ./entrypoints/db_checks.php /usr/local/bin/db_checks.php
 
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
+
+
+# Create system user (admin) to run Composer and Artisan Commands
+RUN useradd -G www-data,root -u 1000 -d /home/admin admin
+
+RUN set -eux; \
+    rm -rf /var/www/*; \
+    chown -R admin:www-data /var/www; \
+    mkdir -p /home/admin/.composer; \
+    mkdir -p /home/admin/logs; \
+    chown -R admin:admin /home/admin
+
+# Set working directory
+WORKDIR /var/www
+
+USER admin

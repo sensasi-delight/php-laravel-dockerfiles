@@ -1,20 +1,9 @@
 #!/bin/sh
 set -e
 
-# Check if $USER is exists
-if [ ! -d /home/$USER/.composer ]; then
-	echo "Creating user $USER";
-	rm -r /var/www || true;
+USER=admin
 
-	# Create system user to run Composer and Artisan Commands
-	useradd -G www-data,root -u 1000 -d /home/$USER $USER;
-
-	mkdir -p /home/$USER/.composer;
-	mkdir -p /home/$USER/logs;
-	chown -R $USER:$USER /home/$USER;
-fi
-
-# # Check if file composer.json is exists
+# Check if file composer.json is exists
 if [ ! -f "/var/www/composer.json" ]; then
 	APP_SRC_GIT=$(cat .env | grep "APP_SRC_GIT=" | grep -v "#" | tail -1 | cut -d '=' -f2);
 	APP_SRC_GIT_BRANCH=$(cat .env | grep "APP_SRC_GIT_BRANCH=" | grep -v "#" | tail -1 | cut -d '=' -f2);
@@ -31,13 +20,13 @@ if [ ! -f "/var/www/composer.json" ]; then
 	fi
 
 	# Copy from /home/$USER/app_src/composer.json
-	if [ -f "/home/$USER/app_src/composer.json" ]; then
+	if [ -f "/home/$USER/app_src/composer.json" ] && [ ! -d "/tmp/laravel-app" ]; then
 		echo "Copy Application from local";
 		cp /home/$USER/app_src /tmp/laravel-app;
 	fi
 
 	# Clone from git
-	if [ "$APP_SRC_GIT" ]; then
+	if [ "$APP_SRC_GIT" ] && [ ! -d "/tmp/laravel-app" ]; then
 		echo "Cloning Application from: $APP_SRC_GIT";
 
 		if [ "$APP_SRC_GIT_BRANCH" ]; then
@@ -51,15 +40,10 @@ if [ ! -f "/var/www/composer.json" ]; then
 	cp -a /tmp/laravel-app/. /var/www/
 	rm -r /tmp/laravel-app
 
-	chown -R $USER:www-data /var/www;
 	chmod -R 775 /var/www/bootstrap/cache;
 	chmod -R 775 /var/www/storage;
 	chmod -R 400 /var/www/.env;
 fi
-
-su $USER
-
-cd /var/www
 
 if [ ! -d "vendor" ]; then
 	echo "Installing packages from composer";

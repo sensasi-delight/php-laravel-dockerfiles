@@ -36,8 +36,7 @@ RUN rm -r /var/www
 RUN adduser -g www-data -D -u 1000 -h /home/admin admin
 RUN addgroup admin root
 
-RUN set -eux; \
-    rm -rf /var/www/*; \
+RUN rm -rf /var/www/*; \
     chown -R admin:www-data /var/www; \
     mkdir -p /home/admin/.composer; \
     mkdir -p /home/admin/logs; \

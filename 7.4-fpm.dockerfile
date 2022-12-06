@@ -29,8 +29,7 @@ RUN chmod +x /usr/local/bin/docker-php-entrypoint
 # Create system user (admin) to run Composer and Artisan Commands
 RUN useradd -G www-data,root -u 1000 -d /home/admin admin
 
-RUN set -eux; \
-    rm -rf /var/www/*; \
+RUN rm -rf /var/www/*; \
     chown -R admin:www-data /var/www; \
     mkdir -p /home/admin/.composer; \
     mkdir -p /home/admin/logs; \

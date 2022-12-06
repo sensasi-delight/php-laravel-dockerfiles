@@ -40,10 +40,10 @@ if [ ! -f "/var/www/composer.json" ]; then
 	cp -a /tmp/laravel-app/. /var/www/;
 	rm -r /tmp/laravel-app;
 
-	chown -R admin:www-data /var/www;
+	chown -R admin /var/www;
 	chmod -R 775 /var/www/bootstrap/cache;
 	chmod -R 775 /var/www/storage;
-	chmod -R 400 /var/www/.env;
+	chmod -R 600 /var/www/.env;
 fi
 
 if [ ! -d "vendor" ]; then
@@ -65,6 +65,7 @@ APP_KEY=$(cat .env | grep "APP_KEY=" | grep -v "#" | tail -1 | cut -d '=' -f2)
 if [ -z "$APP_KEY" ]; then
 	echo "APP_KEY not found";
 	echo "generating APP_KEY";
+
 	php artisan key:generate;
 fi
 

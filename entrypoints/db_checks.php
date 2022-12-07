@@ -13,10 +13,10 @@ function migrate(): void
 	passthru('php artisan migrate --force');
 }
 
-$USER 		   = str_replace(["\n", "\t", "\r"], '', $argv[1]);
-$ROOT_PASSWORD = str_replace(["\n", "\t", "\r"], '', $argv[2]);
-$MYSQL_USER    = str_replace(["\n", "\t", "\r"], '', $argv[3]);
-$DATABASE_NAME = str_replace(["\n", "\t", "\r"], '', $argv[4]);
+$USER 		   = $argv[1];
+$ROOT_PASSWORD = $argv[2];
+$MYSQL_USER    = $argv[3];
+$DATABASE_NAME = $argv[4];
 
 $dbh 		   = new PDO("mysql:host=mysql", 'root', $ROOT_PASSWORD);
 $databases     = explode("\n", $DATABASE_NAME);

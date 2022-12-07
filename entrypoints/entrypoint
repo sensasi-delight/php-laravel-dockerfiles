@@ -2,6 +2,7 @@
 set -e
 
 USER=admin
+cat /var/www/.env | tr -d '\r' > /var/www/.env
 
 # Check if file composer.json is exists
 if [ ! -f "/var/www/composer.json" ]; then
@@ -39,6 +40,7 @@ if [ ! -f "/var/www/composer.json" ]; then
 
 	cp -a /tmp/laravel-app/. /var/www/;
 	rm -r /tmp/laravel-app;
+
 
 	chown -R admin /var/www;
 	chmod -R 775 /var/www/bootstrap/cache;

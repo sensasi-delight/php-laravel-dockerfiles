@@ -2,7 +2,6 @@
 set -e
 
 USER=admin
-cat /var/www/.env | tr -d '\r' > /var/www/.env
 
 # Check if file composer.json is exists
 if [ ! -f "/var/www/composer.json" ]; then
@@ -47,6 +46,13 @@ if [ ! -f "/var/www/composer.json" ]; then
 	chmod -R 775 /var/www/storage;
 	chmod -R 600 /var/www/.env;
 fi
+
+until [ ! -z "$(cat /var/www/.env | tr -d '\r')" ]
+do
+	sleep 1;
+done
+
+cat /var/www/.env | tr -d '\r' > /var/www/.env
 
 if [ ! -d "vendor" ]; then
 	echo "Installing packages from composer";

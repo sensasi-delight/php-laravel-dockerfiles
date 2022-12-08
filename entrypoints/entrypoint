@@ -1,6 +1,12 @@
 #!/bin/sh
 set -e
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
 USER=admin
 
 # Check if file composer.json is exists
@@ -27,10 +33,10 @@ if [ ! -f "/var/www/composer.json" ]; then
 
 	# Clone from git
 	if [ "$APP_SRC_GIT" ] && [ ! -d "/tmp/laravel-app" ]; then
-		echo "Cloning Application from: $APP_SRC_GIT";
+		echo -e "Cloning Application from: ${BLUE}$APP_SRC_GIT";
 
 		if [ "$APP_SRC_GIT_BRANCH" ]; then
-			echo "Branch: ${APP_SRC_GIT_BRANCH}";
+			echo -e "Branch: ${BLUE}${APP_SRC_GIT_BRANCH}";
 			git clone --branch $APP_SRC_GIT_BRANCH $APP_SRC_GIT /tmp/laravel-app;
 		else
 			git clone $APP_SRC_GIT /tmp/laravel-app;
@@ -40,22 +46,19 @@ if [ ! -f "/var/www/composer.json" ]; then
 	cp -a /tmp/laravel-app/. /var/www/;
 	rm -r /tmp/laravel-app;
 
-
-	chown -R admin /var/www;
+	chown -R admin /var/www || true;
 	chmod -R 775 /var/www/bootstrap/cache;
 	chmod -R 775 /var/www/storage;
-	chmod -R 600 /var/www/.env;
+	chmod -R 600 /var/www/.env || true;
 fi
 
-until [ ! -z "$(cat /var/www/.env | tr -d '\r')" ]
-do
-	sleep 1;
-done
-
-cat /var/www/.env | tr -d '\r' > /var/www/.env
+# clear Windows cariage return 
+if [ grep $'\r' /var/www/.env ] ; then
+	cat /var/www/.env | tr -d '\r' > /var/www/.env
+fi
 
 if [ ! -d "vendor" ]; then
-	echo "Installing packages from composer";
+	echo -e "${GREEN}Installing packages from composer";
 	composer install --optimize-autoloader --no-dev;
 fi
 
@@ -71,8 +74,7 @@ php artisan config:clear
 
 APP_KEY=$(cat .env | grep "APP_KEY=" | grep -v "#" | tail -1 | cut -d '=' -f2)
 if [ -z "$APP_KEY" ]; then
-	echo "APP_KEY not found";
-	echo "generating APP_KEY";
+	echo -e "${YELLOW}APP_KEY not found: ${GREEN}generating APP_KEY";
 
 	php artisan key:generate;
 fi
@@ -84,17 +86,16 @@ if [ ! -e "/home/$USER/logs/DB_CHECKED" ]; then
 
 	DB_DATABASES=$(cat .env | grep DB_DATABASE | grep -v "#" | cut -d '=' -f2)
 	if [ -z "$DB_DATABASES" ]; then
-		echo "Database name is set to forge because is empty";
+		echo -e "${YELLOW}Database name is empty: ${GREEN}Set to database name to 'forge'";
 		DB_DATABASES=forge;
 	fi
 
-	php /usr/local/bin/db_checks.php $USER $DB_ROOT_PASSWORD $DB_USERNAME "$DB_DATABASES";
+	php /usr/local/bin/db_checks.php $USER $DB_ROOT_PASSWORD $DB_USERNAME "$DB_DATABASES" || echo -e "${RED}<-- Error on checking database";
 fi
 
 SEED_DB=$(cat .env | grep SEED_DB= | grep -v "#" | tail -1 | cut -d '=' -f2);
 if [ "$SEED_DB" = "true" ] && [ ! -e "/home/$USER/logs/DB_SEEDED"  ]; then
-	php artisan db:seed --force;
-	touch /home/$USER/logs/DB_SEEDED;
+	php artisan db:seed --force && touch /home/$USER/logs/DB_SEEDED || echo -e "${RED}<-- Error on seeding database(s)";
 fi
 
 # (re)create symlink
@@ -103,7 +104,7 @@ php artisan storage:link
 # (re)cache all for optimized
 php artisan config:cache
 php artisan route:cache
-php artisan view:cache || true
+php artisan view:cache || echo -e "${RED}<-- Error on caching view"
 
 
 # first arg is `-f` or `--some-option`

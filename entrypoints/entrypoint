@@ -9,6 +9,12 @@ NC='\033[0m' # No Color
 
 USER=admin
 
+# clear Windows cariage return 
+if grep -q $'\r' "/var/www/.env"; then
+	cat /var/www/.env | tr -d '\r' > /var/www/.env;
+	echo -e "${YELLOW}Windows cariage return removed";
+fi
+
 # Check if file composer.json is exists
 if [ ! -f "/var/www/composer.json" ]; then
 	APP_SRC_GIT=$(cat .env | grep "APP_SRC_GIT=" | grep -v "#" | tail -1 | cut -d '=' -f2);
@@ -52,16 +58,10 @@ if [ ! -f "/var/www/composer.json" ]; then
 	chmod -R 600 /var/www/.env || true;
 fi
 
-# clear Windows cariage return 
-if [ grep $'\r' /var/www/.env ] ; then
-	cat /var/www/.env | tr -d '\r' > /var/www/.env
-fi
-
 if [ ! -d "vendor" ]; then
 	echo -e "${GREEN}Installing packages from composer";
 	composer install --optimize-autoloader --no-dev;
 fi
-
 
 # clear all sysmlinks
 find . -type l -delete
@@ -70,7 +70,6 @@ find . -type l -delete
 php artisan cache:clear
 rm -r bootstrap/cache/* 
 php artisan config:clear
-
 
 APP_KEY=$(cat .env | grep "APP_KEY=" | grep -v "#" | tail -1 | cut -d '=' -f2)
 if [ -z "$APP_KEY" ]; then

@@ -9,11 +9,10 @@ NC='\033[0m' # No Color
 
 USER=admin
 
-# clear Windows cariage return 
-if grep -q $'\r' "/var/www/.env"; then
-	cat /var/www/.env | tr -d '\r' > /var/www/.env;
-	echo -e "${YELLOW}Windows cariage return removed";
-fi
+# clear Windows cariage return
+cat /var/www/.env | tr -d '\r' > /var/www/.env.new
+cat /var/www/.env.new > /var/www/.env
+rm /var/www/.env.new
 
 # Check if file composer.json is exists
 if [ ! -f "/var/www/composer.json" ]; then
